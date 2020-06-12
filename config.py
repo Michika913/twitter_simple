@@ -1,11 +1,13 @@
 import os
 
-DEV_ENV_LABEL = os.getenv("TWITTER_DEV_ENV")
+DEV_ENV_LABEL = "twittersimple"
 
-API_KEY = os.getenv("TWITTER_API_KEY")
-API_SECRET_KEY = os.getenv("TWITTER_API_SECRET_KEY")
-ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
-ACCESS_TOKEN_SECRET = os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
+API_KEY = "Jcoz6le8AmJeRWYTASZIr5aBE"
+API_SECRET_KEY = "wpSPZGWiAXLPF5xIiTkbFWuQcEY6lXlHEY6ouZ1K1m8rXIRoVd"
+ACCESS_TOKEN = "1263308801622437888-xkA22p1m5fNdH0Ndz4FxgiwB5s7Kuu"
+ACCESS_TOKEN_SECRET = "q3ss2jaI8XRCE3jxJlghFfwduSK04dlmcdupnI62SBzCr"
+CALLBACK_URL = "https://twitter.com/Kai78919017"
+
 
 if __name__ == "__main__":
     print("Dev environment label = {}".format(DEV_ENV_LABEL))
