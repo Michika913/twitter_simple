@@ -30,8 +30,10 @@ for line in sample_text:
 
 
         node = node.next
-
-    print(keywords, file=codecs.open("count_word.txt","a"))
-
+    c = len(keywords)
+    print(c, keywords, file=codecs.open("count_word.txt","a"))
+#csv に変換する
 #, file=codecs.open("count_word.txt","w")
 #  writer = csv.writer(files, lineterminator='\n')
+#df = pd.read_csv('count_word.txt')
+#df.mean(axis='colums')
