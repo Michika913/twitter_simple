@@ -31,8 +31,10 @@ for line in sample_text:
 
         node = node.next
     c = len(keywords)
-    print(c, keywords, file=codecs.open("count_word.txt","a"))
-#csv に変換する
+    with open("count_word.csv", "a", encoding="utf_8_sig", newline="") as files:
+        print(c, keywords, file = files)
+
+
 #, file=codecs.open("count_word.txt","w")
 #  writer = csv.writer(files, lineterminator='\n')
 #df = pd.read_csv('count_word.txt')
