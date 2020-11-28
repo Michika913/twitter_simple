@@ -32,8 +32,11 @@ for line in sample_text:
         node = node.next
     c = len(keywords)
     with open("count_word.csv", "a", encoding="utf_8_sig", newline="") as files:
-        print(c, keywords, file = files)
+        print(c, ",",  keywords, file = files)
 
+col_names = ['c{0:02d}'.format(i) for i in range(100)]
+df = pd.read_csv('count_word.csv', encoding='utf_8_sig', names = col_names)
+print(df["c00"].mean())
 
 #, file=codecs.open("count_word.txt","w")
 #  writer = csv.writer(files, lineterminator='\n')
