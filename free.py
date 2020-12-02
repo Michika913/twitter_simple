@@ -1,31 +1,70 @@
-import requests
-import sys
+#訂正情報
+# predicted_data.csv
+#test.pyで品詞抽出
+#抽出結果をcount_word.csv
+#pickleで保存したものがpredicted_dara.binarufile
+
+#その他の情報
+#pre-test.csv
+#free.py(これ)で品詞抽出
+#抽出結果をtest.csv
+#pickleで保存したものがtest.binaryfile
+
+#デマ情報と訂正情報の重複を抽出
+#test.pyで実行
+#平均個数以上(まだ決まっていない)重複してたらデマ認定
+#post-test.csvに出力
+
+
+
+import pandas as pd
 import MeCab
-from time import sleep
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+import csv
+import json
+import codecs
+
 
 
 # 解析対象テキストファイルを開く
-with open('count_word.csv', newline='') as f:
+with open('pre-test.csv', newline='') as f:
 
 # ファイルを読み込むo
-    word_list = f.read().split("\n")
+    sample_text = f.read().split("\n")
 
-# Step3：名詞の出現頻度からTF-IDF/COS類似度を算出。テキスト情報のマッチ度を測る
-def tfidf(word_list):
-    docs = np.array(word_list)#Numpyの配列に変換する
-    #単語を配列ベクトル化して、TF-IDFを計算する
-    vecs = TfidfVectorizer(
-                token_pattern=u'(?u)bw+b'#文字列長が 1 の単語を処理対象に含めることを意味します。
-                ).fit_transform(docs)
-    vecs = vecs.toarray()
-    return vecs
+tokenizer = MeCab.Tagger('../opt/anaconda3/lib/python3.7/site-packages/Mecab/mecab-ipadic-neologd')
+tokenizer.parse("")
 
-def cossim(v1,v2):
-    return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+all = []
+for line in sample_text:
+    keywords = []
+    node = tokenizer.parseToNode(line)
+
+    while node:
+        if node.feature.split(",")[1] == "固有名詞":
+            keywords.append(node.surface)
+        elif node.feature.split(",")[1] == "一般":
+            keywords.append(node.surface)
+        elif node.feature.split(",")[0] == "動詞":
+            keywords.append(node.feature.split(",")[6])
+
+        node = node.next
+    c = len(keywords)
+    all.append(keywords)
+    with open("test.csv", "a", encoding="utf_8_sig", newline="") as files:
+        print(c, ",",  keywords, file = files)
 
 
+col_names = ['c{0:02d}'.format(i) for i in range(100)]
+df = pd.read_csv('test.csv', encoding='utf_8_sig', names = col_names)
+print(df["c00"].mean())
 
-vecs = tfidf(word_list)
-print(cossim(vecs[1], vecs[0]))
+#pickleに保存する
+import pickle
+with open('test.binaryfile', 'wb') as web:
+  pickle.dump(all, web)
+
+
+#, file=codecs.open("count_word.txt","w")
+#  writer = csv.writer(files, lineterminator='\n')
+#df = pd.read_csv('count_word.txt')
+#df.mean(axis='colums')

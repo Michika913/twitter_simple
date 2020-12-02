@@ -1,40 +1,25 @@
-"""
-c = 10
-keyword = ["もじ"]
-
-[[c, keyword]
-[c, keyword]
-[c, keyword]
-[c, keyword]
-[c, keyword]
-[c, keyword]]
-
-all = []
-
-c = 10
-keyword = ["もじ"]
-all.appned([c, keyword])
-
-pickle.dump( all   )
-
-===========================
-よみとったほう
-
-pickle.load( all )
-
-for i in range(1000):
-  for t in all: #ツイート数くりかえす
-    keyword = t[1]
-"""
-import pandas as pd
+#デマ情報の検出
+#訂正情報と重複するものを抽出
 import pickle
 
-with open('predicted_data.binaryfile', 'rb') as f:
-  print(pickle.load(f))
-keyword1 = ["あ", "い", "う", "さ"]
-keyword2 = ["あ", "か", "さ"]
 
-"デマを否定するのって難しくて、必死になって否定するなんて益々あやしい、って言われてしまう。ワクチンの話しとかと一緒。"
+file1 = open('test.binaryfile', 'rb')
+word = pickle.load(file1)
 
-print(len( set(keyword1) & set(keyword2)) )
+file2 = open('predicted_data.binaryfile', 'rb')
+all = pickle.load(file2)
+
+
+
+list = []
+for l in range(len(word)):
+  S1 = set(word[l])
+  for i in range(len(all)):
+    S2 = set(all[i])
+
+    if len(S1 & S2) >= 10:
+      list.append([word[l], all[i]])
+      with open("post-test.csv", "a", encoding="utf_8_sig", newline="") as files:
+        print(word[l], ",", all[i], file = files)
+
 

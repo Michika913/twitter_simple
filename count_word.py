@@ -1,3 +1,4 @@
+#訂正情報の固有名詞・一般名詞・動詞を抽出
 import pandas as pd
 import MeCab
 import csv
@@ -30,7 +31,7 @@ for line in sample_text:
 
         node = node.next
     c = len(keywords)
-    all.append([c, keywords])
+    all.append(keywords)
     with open("count_word.csv", "a", encoding="utf_8_sig", newline="") as files:
         print(c, ",",  keywords, file = files)
 
