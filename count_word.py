@@ -15,7 +15,7 @@ with open('predicted_data.csv', newline='') as f:
 tokenizer = MeCab.Tagger('../opt/anaconda3/lib/python3.7/site-packages/Mecab/mecab-ipadic-neologd')
 tokenizer.parse("")
 
-
+all = []
 for line in sample_text:
     keywords = []
     node = tokenizer.parseToNode(line)
@@ -28,15 +28,22 @@ for line in sample_text:
         elif node.feature.split(",")[0] == "動詞":
             keywords.append(node.feature.split(",")[6])
 
-
         node = node.next
     c = len(keywords)
+    all.append([c, keywords])
     with open("count_word.csv", "a", encoding="utf_8_sig", newline="") as files:
         print(c, ",",  keywords, file = files)
+
 
 col_names = ['c{0:02d}'.format(i) for i in range(100)]
 df = pd.read_csv('count_word.csv', encoding='utf_8_sig', names = col_names)
 print(df["c00"].mean())
+
+#pickleに保存する
+import pickle
+with open('predicted_data.binaryfile', 'wb') as web:
+  pickle.dump(all, web)
+
 
 #, file=codecs.open("count_word.txt","w")
 #  writer = csv.writer(files, lineterminator='\n')

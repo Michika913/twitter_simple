@@ -26,7 +26,7 @@ def print_tweets(tweets):
             print("ハッシュタグの内容", tweet.hashtags)
 
 # キーワードで取得
-tweetCriteria = got.manager.TweetCriteria().setQuerySearch("デマ AND 否定").setMaxTweets(1000).setSince("2020-11-09").setUntil("2020-11-10")
+tweetCriteria = got.manager.TweetCriteria().setQuerySearch("デマ AND 否定").setMaxTweets(1000).setSince("2020-11-30").setUntil("2020-12-01")
 tweets = got.manager.TweetManager.getTweets(tweetCriteria)
 print("---------------------------------")
 print("②キーワードで取得")

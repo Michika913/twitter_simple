@@ -1,43 +1,31 @@
-import pandas as pd
+import requests
+import sys
 import MeCab
-import csv
-import json
-import codecs
-
+from time import sleep
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 # 解析対象テキストファイルを開く
-with open('predicted_data.csv', newline='') as f:
+with open('count_word.csv', newline='') as f:
 
 # ファイルを読み込むo
-    sample_text = f.read().split("\n")
+    word_list = f.read().split("\n")
 
-tokenizer = MeCab.Tagger('../opt/anaconda3/lib/python3.7/site-packages/Mecab/mecab-ipadic-neologd')
-tokenizer.parse("")
+# Step3：名詞の出現頻度からTF-IDF/COS類似度を算出。テキスト情報のマッチ度を測る
+def tfidf(word_list):
+    docs = np.array(word_list)#Numpyの配列に変換する
+    #単語を配列ベクトル化して、TF-IDFを計算する
+    vecs = TfidfVectorizer(
+                token_pattern=u'(?u)bw+b'#文字列長が 1 の単語を処理対象に含めることを意味します。
+                ).fit_transform(docs)
+    vecs = vecs.toarray()
+    return vecs
 
-
-for line in sample_text:
-    keywords = []
-    node = tokenizer.parseToNode(line)
-
-    while node:
-        if node.feature.split(",")[1] == "固有名詞":
-            keywords.append(node.surface)
-        elif node.feature.split(",")[1] == "一般":
-            keywords.append(node.surface)
-        elif node.feature.split(",")[0] == "動詞":
-            keywords.append(node.feature.split(",")[6])
+def cossim(v1,v2):
+    return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
 
 
-        node = node.next
-    c = len(keywords)
-    with open ("count_word.csv", "a", encoding = "utf_8_sig", newline = "") as files:
-        print(c, ",", keywords, file = files)
-col_names = ['c{0:02d}'.format(i) for i in range(100)]
-df = pd.read_csv('count_word.csv', encoding='utf_8_sig', names = col_names)
-print(df["c00"].mean())
 
-#, file=codecs.open("count_word.txt","w")
-#  writer = csv.writer(files, lineterminator='\n')
-#df = pd.read_csv('count_word.txt')
-#df.mean(axis='colums')
+vecs = tfidf(word_list)
+print(cossim(vecs[1], vecs[0]))

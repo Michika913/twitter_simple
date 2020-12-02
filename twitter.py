@@ -19,7 +19,7 @@ tweet_data = []  # 取得したツイートを格納するリスト
 
 
 
-for tweet in api.search(q ='報道否定 since:2020-11-15_08:00:00_JST until:2020-11-25_07:36:51_JST exclude:retweets', tweet_mode='extended', count=200):
+for tweet in api.search(q =' since:2020-11-29 until:2020-11-30 exclude:retweets', tweet_mode='extended', count=200):
     try:
         tweet_data.append([tweet.id, tweet.user.screen_name, tweet.created_at, tweet.full_text.replace('\n', ''),
                            tweet.favorite_count, tweet.retweet_count, tweet.user.followers_count,
@@ -27,11 +27,11 @@ for tweet in api.search(q ='報道否定 since:2020-11-15_08:00:00_JST until:202
     except Exception as e:
         print(e)
 
-
+#since:2020-11-15_08:00:00_JST until:2020-11-25_07:36:51_JST exclude:retweets', tweet_mode='extended', count=200):
 
 import csv  # csvライブラリの読み込み
 
-with open('報道否定.csv', 'w', newline='', encoding='utf_8_sig') as f:
+with open('テスト1203.csv', 'a', newline='', encoding='utf_8_sig') as f:
     writer = csv.writer(f, lineterminator='\n')
     writer.writerow(["id", "user", "created_at", "text", "fav", "RT", "follower", "follows"])
     writer.writerows(tweet_data)
