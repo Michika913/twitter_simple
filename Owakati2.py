@@ -7,13 +7,13 @@ from sys import argv
 import csv
 
 # 解析対象テキストファイルを開く
-with open('流言マーカ/デマ否定1102.csv', newline='') as f:
+with open('訂正情報.csv', newline='') as f:
 
 # ファイルを読み込む
     data = f.read()
 text_data = []
 # 分かち書きのみ出力する設定にする
-for line in open('流言マーカ/デマ否定1102.csv', 'r'):
+for line in open('訂正情報.csv', 'r'):
     mecab = MeCab.Tagger("-Owakati")
     text = mecab.parse(data)
     mecab.parse('')

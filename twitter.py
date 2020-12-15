@@ -19,11 +19,14 @@ tweet_data = []  # 取得したツイートを格納するリスト
 
 
 
-for tweet in api.search(q =' since:2020-11-29 until:2020-11-30 exclude:retweets', tweet_mode='extended', count=200):
+for tweet in api.search(q ='デマ since:2020-12-01 until:2020-12-11 exclude:retweets', tweet_mode='extended', count=200):
     try:
-        tweet_data.append([tweet.id, tweet.user.screen_name, tweet.created_at, tweet.full_text.replace('\n', ''),
-                           tweet.favorite_count, tweet.retweet_count, tweet.user.followers_count,
-                           tweet.user.friends_count])
+        tweet_data.append([tweet.full_text.replace('\n', '')])
+
+
+        # tweet_data.append([tweet.id, tweet.user.screen_name, tweet.created_at, tweet.full_text.replace('\n', ''),
+                          # tweet.favorite_count, tweet.retweet_count, tweet.user.followers_count,
+                          #tweet.user.friends_count])
     except Exception as e:
         print(e)
 
@@ -31,7 +34,7 @@ for tweet in api.search(q =' since:2020-11-29 until:2020-11-30 exclude:retweets'
 
 import csv  # csvライブラリの読み込み
 
-with open('テスト1203.csv', 'a', newline='', encoding='utf_8_sig') as f:
+with open('デマツイート1.csv', 'a', newline='', encoding='utf_8_sig') as f:
     writer = csv.writer(f, lineterminator='\n')
     writer.writerow(["id", "user", "created_at", "text", "fav", "RT", "follower", "follows"])
     writer.writerows(tweet_data)

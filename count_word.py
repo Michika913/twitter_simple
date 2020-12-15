@@ -1,4 +1,4 @@
-#訂正情報の固有名詞・一般名詞・動詞を抽出
+#訂正情報(bertによる分類)の固有名詞・一般名詞・動詞を抽出
 import pandas as pd
 import MeCab
 import csv
@@ -8,7 +8,7 @@ import codecs
 
 
 # 解析対象テキストファイルを開く
-with open('predicted_data.csv', newline='') as f:
+with open('delurl_tweet2.csv', newline='') as f:
 
 # ファイルを読み込むo
     sample_text = f.read().split("\n")
@@ -32,17 +32,18 @@ for line in sample_text:
         node = node.next
     c = len(keywords)
     all.append(keywords)
-    with open("count_word.csv", "a", encoding="utf_8_sig", newline="") as files:
+    #csvに、抽出した形態素とその数を出力
+    with open("count_word2.csv", "a", encoding="utf_8_sig", newline="") as files:
         print(c, ",",  keywords, file = files)
 
-
+#pandasデータフレーム化
 col_names = ['c{0:02d}'.format(i) for i in range(100)]
-df = pd.read_csv('count_word.csv', encoding='utf_8_sig', names = col_names)
+df = pd.read_csv('count_word2.csv', encoding='utf_8_sig', names = col_names)
 print(df["c00"].mean())
 
 #pickleに保存する
 import pickle
-with open('predicted_data.binaryfile', 'wb') as web:
+with open('predicted_data2.binaryfile', 'wb') as web:
   pickle.dump(all, web)
 
 
