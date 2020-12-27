@@ -6,7 +6,7 @@ import config
 import utils
 
 
-API = 'tweets/search/30day/:{}'.format(config.DEV_ENV_LABEL)
+API = 'tweets/search/fullarchive/:{}'.format(config.DEV_ENV_LABEL)
 api = TwitterAPI(config.API_KEY, config.API_SECRET_KEY, config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
 
 
@@ -26,6 +26,7 @@ def search_tweets(query):
     res = api.request(API, params=params)
     if res.status_code != 200:  # 正常終了出来なかった場合
         print("Error with code: %d" % res.status_code)
+
     else:
         for tweet in res:
             tweets.append(tweet)
@@ -39,6 +40,7 @@ if __name__ == '__main__':
         if args.filename:
             with open(args.filename, "w+") as f:
                 json.dump(tweets, f, indent=2, ensure_ascii=False)
+
         else:
             utils.show_tweets(tweets)
 

@@ -19,7 +19,7 @@ tweet_data = []  # 取得したツイートを格納するリスト
 
 
 
-for tweet in api.search(q ='デマ since:2020-12-01 until:2020-12-11 exclude:retweets', tweet_mode='extended', count=200):
+for tweet in api.search(q ='デマ since:2019-12-01 until:2019-12-16 exclude:retweets', tweet_mode='extended', count=200):
     try:
         tweet_data.append([tweet.full_text.replace('\n', '')])
 
