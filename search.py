@@ -8,7 +8,7 @@ import config
 import utils
 
 
-API = 'tweets/search/fullarchive/:{}'.format(config.DEV_ENV_LABEL)
+API = 'tweets/search/30days/:{}'.format(config.DEV_ENV_LABEL)
 api = TwitterAPI(config.API_KEY, config.API_SECRET_KEY, config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
 
 
@@ -31,9 +31,9 @@ def search_tweets(query, count=200):
     while(len(tweets) < count):
         c = max(min(count - len(tweets), 100), 10)  # maxResults must be between 10 and 100
         params = {
-            'query': query,
+            'query': "query",
             'maxResults': c,
-            'fromDate': 20208201500,
+            'fromDate': 202008201500,
             'toDate': 202012201200
 
         }
@@ -42,7 +42,9 @@ def search_tweets(query, count=200):
 
         res = api.request(API, params=params)
         if res.status_code == 429:  # 時間内の取得数リミットに引っかかった場合
-            secs_to_wait = int(res.headers["X-Rate-Limit-Reset"])
+            epoch_time_to_wait = res.headers["X-Rate-Limit-Reset"]
+            current_epoch_time = time.time()
+            secs_to_wait = (int(epoch_time_to_wait) -int(current_epoch_time)) + 1
             print("Exceed rate limit.")
             print("Waiting for rate limit reset: {} secs.".format(secs_to_wait))
             time.sleep(secs_to_wait)
@@ -95,8 +97,10 @@ def filter_excluding_retweets(tweets):
 
 if __name__ == '__main__':
     args = parse_arg()
-    if args.query:
-        tweets = search_tweets(args.query, args.count)
+    q ="事務所　AND デマ"
+
+    if q:
+        tweets = search_tweets(q, args.count)
         if args.min_retweet:
             tweets = filter_by_min_retweet(tweets, args.min_retweet)
         if args.min_quote:
@@ -108,5 +112,7 @@ if __name__ == '__main__':
         if args.filename:
             with open(args.filename, "w+") as f:
                 json.dump(tweets, f, indent=2, ensure_ascii=False)
+                data = load(f)
+                print(data)
         else:
             utils.show_tweets(tweets)

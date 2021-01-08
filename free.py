@@ -1,8 +1,8 @@
 #①訂正情報(bertによる分類)
-# delurl_tweet1.csv
+# delurl_tweet.csv
 #count_word.pyで品詞抽出　ー固有名詞・一般名詞・動詞
-#抽出結果をcount_word.csv
-#pickleで保存したものがpredicted_dara.binaryfile
+#抽出結果をpredicted_tweet.csv
+#pickleで保存したものがpredicted_tweet.binaryfile
 
 #②その他の情報(デマ情報を含む)
 #test_tweet.csv
@@ -13,8 +13,8 @@
 #③その他情報と訂正情報の重複を抽出
 #test.pyで実行
 #ある一定の割合で重複していたら訂正情報とともに出力　→デマ認定
-#post-test.csvに出力
-
+#test_result.csvに出力
+#デマ情報の本文は，false_rumor.csvに出力
 
 
 import pandas as pd
@@ -26,7 +26,7 @@ import codecs
 
 
 # 解析対象テキストファイルを開く
-with open('test_tweet2.csv', newline='') as f:
+with open('test_tweet.csv', newline='') as f:
 
 # ファイルを読み込むo
     sample_text = f.read().split("\n")
@@ -49,21 +49,23 @@ for line in sample_text:
 
         node = node.next
     c = len(keywords)
-    all.append(keywords)
+    all.append((keywords, line))
     # csvに、抽出した形態素とその数を出力
-    with open("test2.csv", "a", encoding="utf_8_sig", newline="") as files:
-        print(c, ",",  keywords, file = files)
+    with open("test.csv", "a", encoding="utf_8_sig", newline="") as files:
+        print(c, ",",  keywords, ",", line, file = files)
 
 
 #pandasデータフレーム化
 col_names = ['c{0:02d}'.format(i) for i in range(100)]
-df = pd.read_csv('test2.csv', encoding='utf_8_sig', names = col_names)
+df = pd.read_csv('test.csv', encoding='utf_8_sig', names = col_names)
 print(df["c00"].mean())
-
+#print(df)
 #pickleに保存する
 import pickle
-with open('test2.binaryfile', 'wb') as web:
-  pickle.dump(all, web)
+with open('test.binaryfile', 'wb') as web:
+   # alls = (keywords, line)
+    pickle.dump(all, web)
+print (all)
 
 
 #, file=codecs.open("count_word.txt","w")

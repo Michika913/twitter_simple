@@ -1,112 +1,36 @@
-import json
-import argparse
-import time
-from pprint import pprint
+#訂正情報以外からデマ情報を検出
+#訂正情報と重複するものを抽出
+#その他情報　test.binaryfile
+#訂正情報　predicted.data.binaryfile
+import pickle
+import csv
 
-from TwitterAPI import TwitterAPI
-import config
-import utils
-
-
-API = 'tweets/search/fullarchive/:{}'.format(config.DEV_ENV_LABEL)
-api = TwitterAPI(config.API_KEY, config.API_SECRET_KEY, config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
-
-
-def parse_arg():
-    args = argparse.ArgumentParser(description="search tweets by query.")
-    args.add_argument("-f", "--filename", type=str, help="specify output JSON filename.")
-    args.add_argument("-q", "--query", type=str, help="specify query keyword.")
-    args.add_argument("-c", "--count", type=int, default=200, help="the number of tweets to retrieve.")
-    args.add_argument("--min_retweet", type=int, help="collect tweets retweeted at least specified number of times.")
-    args.add_argument("--min_quote", type=int, help="collect tweets quoted at least specified number of times.")
-    args.add_argument("--min_reply", type=int, help="collect tweets replied at least specified number of times.")
-    args.add_argument("--exclude_retweets", action="store_true", help="to exculde retweets.")
-    return args.parse_args()
+file1 = open('predicted_tweet.binaryfile', 'rb')
+words = pickle.load(file1)
+word =[x[0] for x in words]
+word2 =[p[1] for p in words]
+#print (word2)
+file2 = open('test.binaryfile', 'rb')
+terms = pickle.load(file2)
+term = [y[0] for y in terms]
+term2 =[q[1] for q in terms]
 
 
-def search_tweets(query, count=200):
-    tweets = []
-    next_id = None
 
-    while(len(tweets) < count):
-        c = max(min(count - len(tweets), 100), 10)  # maxResults must be between 10 and 100
-        params = {
-            'query': query,
-            'maxResults': c,
-            'fromDate': 20208201500,
-            'toDate': 202012201200
+list = []
+for l in range(len(word)):
+  S1 = set(word[l])
+  correct = word2[l]
+  for i in range(len(term)):
+    S2 = set(term[i])
+    rumor = term2[i]
 
-        }
-        if next_id is not None:
-            params["next"] = next_id
+    if len(S1 & S2) >= (len(S1)* 0.4) :
+      list.append([word[l], term[i]])
+      with open("test_result.csv", "a", encoding="utf_8_sig", newline="") as files:
+        print("訂正", word[l], ",", "デマ", term[i], file = files)
 
-        res = api.request(API, params=params)
-        if res.status_code == 429:  # 時間内の取得数リミットに引っかかった場合
-            secs_to_wait = int(res.headers["X-Rate-Limit-Reset"])
-            print("Exceed rate limit.")
-            print("Waiting for rate limit reset: {} secs.".format(secs_to_wait))
-            time.sleep(secs_to_wait)
-            continue
-        elif res.status_code != 200:  # それ以外の理由で正常終了出来なかった場合
-            print("Error with code: %d" % res.status_code)
-            pprint(res.json())
-            break
-        else:
-            rj = res.json()
-            next_id = rj["next"]
-            for tweet in rj["results"]:
-                tweets.append(tweet)
-            print("Got {} tweets. Total {} tweets.".format(len(rj["results"]), len(tweets)))
-            print("Possible API calls: {}".format(res.headers["X-Rate-Limit-Remaining"]))
-    return tweets
+      with open("false_rumor.csv", "a", encoding="utf_8_sig", newline="") as file1:
+        print(term2[i], file = file1)
 
 
-def filter_by_min_retweet(tweets, min_retweet):
-    tweets_filtered = []
-    for t in tweets:
-        if min_retweet <= t["retweet_count"]:
-            tweets_filtered.append(t)
-    return tweets_filtered
-
-
-def filter_by_min_quote(tweets, min_quote):
-    tweets_filtered = []
-    for t in tweets:
-        if min_quote <= t["quote_count"]:
-            tweets_filtered.append(t)
-    return tweets_filtered
-
-
-def filter_by_min_reply(tweets, min_reply):
-    tweets_filtered = []
-    for t in tweets:
-        if min_reply <= t["reply_count"]:
-            tweets_filtered.append(t)
-    return tweets_filtered
-
-
-def filter_excluding_retweets(tweets):
-    tweets_filtered = []
-    for t in tweets:
-        if "retweeted_status" not in t:
-            tweets_filtered.append(t)
-    return tweets_filtered
-
-
-if __name__ == '__main__':
-    args = parse_arg()
-    if args.query:
-        tweets = search_tweets(args.query, args.count)
-        if args.min_retweet:
-            tweets = filter_by_min_retweet(tweets, args.min_retweet)
-        if args.min_quote:
-            tweets = filter_by_min_quote(tweets, args.min_quote)
-        if args.min_reply:
-            tweets = filter_by_min_reply(tweets, args.min_reply)
-        if args.exclude_retweets:
-            tweets = filter_excluding_retweets(tweets)
-        if args.filename:
-            with open(args.filename, "w+") as f:
-                json.dump(tweets, f, indent=2, ensure_ascii=False)
-        else:
-            utils.show_tweets(tweets)

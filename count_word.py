@@ -8,7 +8,7 @@ import codecs
 
 
 # 解析対象テキストファイルを開く
-with open('delurl_tweet2.csv', newline='') as f:
+with open('delurl_tweet.csv', newline='') as f:
 
 # ファイルを読み込むo
     sample_text = f.read().split("\n")
@@ -31,20 +31,22 @@ for line in sample_text:
 
         node = node.next
     c = len(keywords)
-    all.append(keywords)
+    all.append((keywords, line))
     #csvに、抽出した形態素とその数を出力
-    with open("count_word2.csv", "a", encoding="utf_8_sig", newline="") as files:
-        print(c, ",",  keywords, file = files)
+    with open("predicted_tweet.csv", "a", encoding="utf_8_sig", newline="") as files:
+        print(c, ",",  keywords, ",", line, file = files)
 
 #pandasデータフレーム化
 col_names = ['c{0:02d}'.format(i) for i in range(100)]
-df = pd.read_csv('count_word2.csv', encoding='utf_8_sig', names = col_names)
+df = pd.read_csv('predicted_tweet.csv', encoding='utf_8_sig', names = col_names)
 print(df["c00"].mean())
 
 #pickleに保存する
 import pickle
-with open('predicted_data2.binaryfile', 'wb') as web:
-  pickle.dump(all, web)
+with open('predicted_tweet.binaryfile', 'wb') as web:
+
+    pickle.dump(all, web)
+
 
 
 #, file=codecs.open("count_word.txt","w")
